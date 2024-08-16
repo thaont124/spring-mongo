@@ -1,6 +1,7 @@
 package tina.demo.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tina.demo.entity.Product;
@@ -34,6 +35,11 @@ public class ProductController {
     @PatchMapping("/{id}")
     public ResponseEntity<?>  updateProduct(@PathVariable("id") String id, @RequestBody Product product) {
         return ResponseEntity.ok(productService.updateProduct(id, product));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?>  delProduct(@PathVariable("id") String id) {
+        productService.deleteProductById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping

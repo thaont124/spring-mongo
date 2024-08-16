@@ -3,10 +3,8 @@ package tina.demo.generator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import tina.demo.entity.Order;
-import tina.demo.entity.OrderDetail;
-import tina.demo.entity.Product;
-import tina.demo.entity.User;
+import tina.demo.entity.*;
+import tina.demo.repository.elasticsearch.CategoryRepository;
 import tina.demo.repository.jpa.OrderDetailRepository;
 import tina.demo.repository.jpa.OrderRepository;
 import tina.demo.repository.jpa.UserRepository;
@@ -15,13 +13,19 @@ import tina.demo.repository.mongo.ProductRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class DataGenerator implements CommandLineRunner {
+    private static final String[] NAMES = {"Electronics", "Books", "Clothing", "Home", "Sports", "Toys", "Groceries", "Beauty", "Automotive", "Jewelry"};
+    private static final String[] DESCRIPTIONS = {"High quality", "Latest model", "On sale", "Popular item", "Top-rated", "Exclusive", "Limited edition", "Best seller", "Customer favorite", "Eco-friendly"};
+
+
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
 
@@ -42,6 +46,19 @@ public class DataGenerator implements CommandLineRunner {
                 products.add(new Product(UUID.randomUUID().toString(), "Product " + i, "Description for product " + i, 10.0 + i, "Category " + i, "SELLING", null));
             }
             productRepository.saveAll(products);
+
+            List<Category> categories = new ArrayList<>();
+            Random random = new Random();
+
+            for (int i = 1; i <= 1_000_000; i++) {
+                String randomName = NAMES[random.nextInt(NAMES.length)] + " " + (i % 100);
+                String randomDescription = DESCRIPTIONS[random.nextInt(DESCRIPTIONS.length)] + " " + i;
+
+                categories.add(new Category(UUID.randomUUID().toString(), randomName, randomDescription));
+            }
+
+
+            categoryRepository.saveAll(categories);
 
             // Create 100 Orders and OrderDetails
             List<Order> orders = new ArrayList<>();
